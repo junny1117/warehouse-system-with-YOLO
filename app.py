@@ -31,9 +31,7 @@ video_stream = VideoStream("test.mp4")
 weights_path = 'best.pt'
 roi_dangerzone = (100, 200, 300, 400)
 roi_collision_caution = (400, 500, 300, 400)
-dangerzone_time_threshold = 5
-parking_time_threshold = 10  
-detector = ObjectDetector(weights_path, roi_dangerzone, roi_collision_caution, dangerzone_time_threshold, parking_time_threshold)
+detector = ObjectDetector(weights_path, roi_dangerzone, roi_collision_caution)
 
 tracked_objects = {}
 tracked_events = {}
@@ -59,8 +57,8 @@ def login():
             session['logged_in'] = True
             return redirect(url_for('index'))
         else:
-            return render_template('login.html', error='Invalid Credentials')
-    return render_template('login.html')
+            return render_template('로그인화면.html', error='Invalid Credentials')
+    return render_template('로그인화면.html')
 
 @app.route('/logout')
 @login_required
@@ -71,7 +69,7 @@ def logout():
 @app.route('/')
 @login_required
 def index():
-    return render_template('index.html')
+    return render_template('cctv-monitoring.html')
 
 @app.route('/video_feed')
 @login_required
