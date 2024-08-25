@@ -7,13 +7,13 @@ from pathlib import Path
 from collections import defaultdict
 import time
 
-sys.path.append(os.path.join(os.getcwd(), 'yolov5'))
-sys.path.append(os.path.join(os.getcwd(), 'yolov5', 'utils'))
+sys.path.append(os.path.join(os.getcwd(), 'yolov51'))
+sys.path.append(os.path.join(os.getcwd(), 'yolov51', 'utils'))
 
-from yolov5.models.common import DetectMultiBackend
-from yolov5.utils.general import non_max_suppression, scale_coords
-from yolov5.utils.torch_utils import select_device
-from yolov5.utils.augmentations import letterbox
+from yolov51.models.common import DetectMultiBackend
+from yolov51.utils.general import non_max_suppression, scale_coords
+from yolov51.utils.torch_utils import select_device
+from yolov51.utils.augmentations import letterbox
 
 class ObjectDetector:
     def __init__(self, weights_path, roi_dangerzone, roi_collision_caution):
