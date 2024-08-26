@@ -7,8 +7,8 @@ from pathlib import Path
 from collections import defaultdict
 import time
 
-sys.path.append(os.path.join(os.getcwd(), 'yolov51'))
-sys.path.append(os.path.join(os.getcwd(), 'yolov51', 'utils'))
+sys.path.append(os.path.join(os.getcwd(), 'yolov5'))
+sys.path.append(os.path.join(os.getcwd(), 'yolov5', 'utils'))
 
 from yolov51.models.common import DetectMultiBackend
 from yolov51.utils.general import non_max_suppression, scale_coords

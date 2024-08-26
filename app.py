@@ -10,10 +10,10 @@ from pathlib import Path
 from python.video_stream import VideoStream
 from python.detection import ObjectDetector
 from python.database import init_db, db_session, Event
-from yolov51.models.common import DetectMultiBackend
-from yolov51.utils.general import non_max_suppression, scale_coords
-from yolov51.utils.torch_utils import select_device
-from yolov51.utils.augmentations import letterbox
+from yolov5.models.common import DetectMultiBackend
+from yolov5.utils.general import non_max_suppression, scale_coords
+from yolov5.utils.torch_utils import select_device
+from yolov5.utils.augmentations import letterbox
 from functools import wraps
 
 app = Flask(__name__)
