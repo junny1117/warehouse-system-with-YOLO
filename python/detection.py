@@ -105,7 +105,7 @@ class ObjectDetector:
                 for obj_id2, obj2 in objects.items():
                     if obj2['class'] == 'forklift':
                         distance = np.sqrt((obj1['center'][0] - obj2['center'][0])**2 + (obj1['center'][1] - obj2['center'][1])**2)
-                        if distance < 100:
+                        if distance < 300:
                             detected_events.append({'type': '근접 알림', '신뢰도': min(obj1['conf'].item(), obj2['conf'].item())})
                             cv2.line(frame, (int(obj1['center'][0]), int(obj1['center'][1])), (int(obj2['center'][0]), int(obj2['center'][1])), (255, 255, 0), 2)
                             cv2.putText(frame, 'Proximity Alert', (int((obj1['center'][0] + obj2['center'][0]) / 2), int((obj1['center'][1] + obj2['center'][1]) / 2) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 0), 2)

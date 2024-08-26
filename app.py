@@ -151,9 +151,9 @@ def select_roi2():
 
 def update_roi(roi_type, roi):
     if roi_type == 'roi_dangerzone':
-        detector.roi_intrusion = roi
+        detector.roi_dangerzone = roi
     elif roi_type == 'roi_restrictzone':
-        detector.roi_no_parking = roi
+        detector.roi_restrictzone= roi
     print(f"{roi_type} updated to {roi}")
 
 @app.route('/events')
