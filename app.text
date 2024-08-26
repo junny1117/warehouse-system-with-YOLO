@@ -1,0 +1,50 @@
+def select_roi():
+    global roi_dangerzone
+    frame = video_stream.get_frame()
+
+    scale_percent = 50  # 프레임 크기 조정 (예: 50%로 축소)
+    width = int(frame.shape[1] * scale_percent / 100)
+    height = int(frame.shape[0] * scale_percent / 100)
+    dim = (width, height)
+
+    resized_frame = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
+
+    roi_dangerzone_resized = cv2.selectROI("Select dangerzone ROI", resized_frame, fromCenter=False, showCrosshair=True)
+    roi_dangerzone = (
+        int(roi_dangerzone_resized[0] / scale_percent * 100),
+        int(roi_dangerzone_resized[1] / scale_percent * 100),
+        int(roi_dangerzone_resized[2] / scale_percent * 100),
+        int(roi_dangerzone_resized[3] / scale_percent * 100)
+    )
+    cv2.destroyWindow("Select dangerzone ROI")
+
+    detector.roi_dangerzone = roi_dangerzone  # ObjectDetector 인스턴스의 ROI 업데이트
+
+    return redirect(url_for('index'))
+
+
+@app.route('/select_roi2')
+@login_required
+def select_roi2():
+    global roi_collision_caution
+    frame = video_stream.get_frame()
+
+    scale_percent = 50  # 프레임 크기 조정 (예: 50%로 축소)
+    width = int(frame.shape[1] * scale_percent / 100)
+    height = int(frame.shape[0] * scale_percent / 100)
+    dim = (width, height)
+
+    resized_frame = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
+
+    roi_collision_caution_resized = cv2.selectROI("Select No Parking ROI", resized_frame, fromCenter=False, showCrosshair=True)
+    roi_collision_caution = (
+        int(roi_collision_caution_resized[0] / scale_percent * 100),
+        int(roi_collision_caution_resized[1] / scale_percent * 100),
+        int(roi_collision_caution_resized[2] / scale_percent * 100),
+        int(roi_collision_caution_resized[3] / scale_percent * 100)
+    )
+    cv2.destroyWindow("Select No Parking ROI")
+
+    detector.roi_collision_caution = roi_collision_caution  # ObjectDetector 인스턴스의 ROI 업데이트
+
+    return redirect(url_for('index'))

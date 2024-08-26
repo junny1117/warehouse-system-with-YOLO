@@ -7,6 +7,7 @@ import numpy as np
 from flask import Flask, render_template, Response, request, redirect, url_for, session
 from flask_socketio import SocketIO, emit
 from pathlib import Path
+from threading import Thread  # 추가된 임포트
 from python.video_stream import VideoStream
 from python.detection import ObjectDetector
 from python.database import init_db, db_session, Event
@@ -30,8 +31,8 @@ video_stream = VideoStream("test.mp4")
 
 weights_path = 'best.pt'
 roi_dangerzone = (100, 200, 300, 400)
-roi_collision_caution = (400, 500, 300, 400)
-detector = ObjectDetector(weights_path, roi_dangerzone, roi_collision_caution)
+roi_restrictzone = (400, 500, 300, 400)
+detector = ObjectDetector(weights_path, roi_dangerzone, roi_restrictzone)
 
 tracked_objects = {}
 tracked_events = {}
@@ -79,7 +80,7 @@ def video_feed():
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
-    global roi_dangerzone, roi_collision_caution
+    global roi_dangerzone, roi_restrictzone
     if request.method == 'POST':
         roi_dangerzone = (
             int(request.form['dangerzone_x']),
@@ -87,75 +88,78 @@ def settings():
             int(request.form['dangerzone_width']),
             int(request.form['dangerzone_height'])
         )
-        roi_collision_caution = (
-            int(request.form['collision_caution_x']),
-            int(request.form['collision_caution_y']),
-            int(request.form['collision_caution_width']),
-            int(request.form['collision_caution_height'])
+        roi_restrictzone = (
+            int(request.form['restrictzone_x']),
+            int(request.form['restrictzone_y']),
+            int(request.form['restrictzone_width']),
+            int(request.form['restrictzone_height'])
         )
-        detector.roi_dangerzone = roi_dangerzone  # ObjectDetector 인스턴스의 ROI 업데이트
-        detector.roi_collision_caution = roi_collision_caution  # ObjectDetector 인스턴스의 ROI 업데이트
+        detector.roi_dangerzone = roi_dangerzone  
+        detector.roi_restrictzone = roi_restrictzone 
         return redirect(url_for('index'))
     return render_template('settings.html')
+
+def select_roi_async(frame, scale_percent, roi_callback):
+    def _select_roi():
+        resized_frame = cv2.resize(
+            frame,
+            (int(frame.shape[1] * scale_percent / 100), int(frame.shape[0] * scale_percent / 100)),
+            interpolation=cv2.INTER_AREA
+        )
+
+        window_name = "Select ROI"
+        cv2.namedWindow(window_name)
+        
+        if cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) != -1:
+            cv2.destroyWindow(window_name)
+
+        cv2.imshow(window_name, resized_frame)
+        roi_resized = cv2.selectROI(window_name, resized_frame, fromCenter=False, showCrosshair=True)
+
+        if roi_resized[2] > 0 and roi_resized[3] > 0:
+            roi_original = (
+                int(roi_resized[0] / scale_percent * 100),
+                int(roi_resized[1] / scale_percent * 100),
+                int(roi_resized[2] / scale_percent * 100),
+                int(roi_resized[3] / scale_percent * 100)
+            )
+            roi_callback(roi_original)
+        else:
+            print("No valid ROI selected or selection was canceled.")
+
+        cv2.destroyWindow(window_name)
+
+    thread = Thread(target=_select_roi)
+    thread.start()
+    thread.join()
 
 @app.route('/select_roi')
 @login_required
 def select_roi():
-    global roi_dangerzone
     frame = video_stream.get_frame()
-
-    scale_percent = 50  # 프레임 크기 조정 (예: 50%로 축소)
-    width = int(frame.shape[1] * scale_percent / 100)
-    height = int(frame.shape[0] * scale_percent / 100)
-    dim = (width, height)
-
-    resized_frame = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
-
-    roi_dangerzone_resized = cv2.selectROI("Select dangerzone ROI", resized_frame, fromCenter=False, showCrosshair=True)
-    roi_dangerzone = (
-        int(roi_dangerzone_resized[0] / scale_percent * 100),
-        int(roi_dangerzone_resized[1] / scale_percent * 100),
-        int(roi_dangerzone_resized[2] / scale_percent * 100),
-        int(roi_dangerzone_resized[3] / scale_percent * 100)
-    )
-    cv2.destroyWindow("Select dangerzone ROI")
-
-    detector.roi_dangerzone = roi_dangerzone  # ObjectDetector 인스턴스의 ROI 업데이트
-
+    if frame is not None:
+        select_roi_async(frame, 50, lambda roi: update_roi('roi_dangerzone', roi))
     return redirect(url_for('index'))
-
 
 @app.route('/select_roi2')
 @login_required
 def select_roi2():
-    global roi_collision_caution
     frame = video_stream.get_frame()
-
-    scale_percent = 50  # 프레임 크기 조정 (예: 50%로 축소)
-    width = int(frame.shape[1] * scale_percent / 100)
-    height = int(frame.shape[0] * scale_percent / 100)
-    dim = (width, height)
-
-    resized_frame = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
-
-    roi_collision_caution_resized = cv2.selectROI("Select No Parking ROI", resized_frame, fromCenter=False, showCrosshair=True)
-    roi_collision_caution = (
-        int(roi_collision_caution_resized[0] / scale_percent * 100),
-        int(roi_collision_caution_resized[1] / scale_percent * 100),
-        int(roi_collision_caution_resized[2] / scale_percent * 100),
-        int(roi_collision_caution_resized[3] / scale_percent * 100)
-    )
-    cv2.destroyWindow("Select No Parking ROI")
-
-    detector.roi_collision_caution = roi_collision_caution  # ObjectDetector 인스턴스의 ROI 업데이트
-
+    if frame is not None:
+        select_roi_async(frame, 50, lambda roi: update_roi('roi_restrictzone', roi))
     return redirect(url_for('index'))
 
+def update_roi(roi_type, roi):
+    if roi_type == 'roi_dangerzone':
+        detector.roi_intrusion = roi
+    elif roi_type == 'roi_restrictzone':
+        detector.roi_no_parking = roi
+    print(f"{roi_type} updated to {roi}")
 
 @app.route('/events')
 @login_required
 def events():
-    events = db_session.query(Event).order_by(Event.timestamp.desc()).all()  # 최신 이벤트부터 정렬
+    events = db_session.query(Event).order_by(Event.timestamp.desc()).all()
     return render_template('events.html', events=events)
 
 def gen_frames():
@@ -168,11 +172,10 @@ def gen_frames():
         frame, detected_events = detector.detect_and_draw(frame)
 
         for event in detected_events:
-            event_id = event['type'] + str(int(event['신뢰도'] * 100))  # 이벤트를 구분하는 ID 생성
+            event_id = event['type'] + str(int(event['신뢰도'] * 100))
 
-            # 새로운 이벤트가 트래킹 중이 아니면 처리
             if event_id not in tracked_events:
-                print(f"New event detected: {event_id}")  # 디버깅용 로그
+                print(f"New event detected: {event_id}")
                 new_event = Event(
                     label=event['type'],
                     confidence=event['신뢰도'],
@@ -185,7 +188,7 @@ def gen_frames():
                     'confidence': new_event.confidence,
                     'timestamp': new_event.timestamp.strftime('%Y-%m-%d %H:%M:%S')
                 })
-                tracked_events[event_id] = new_event.timestamp  # 이벤트를 트래킹에 추가
+                tracked_events[event_id] = new_event.timestamp
 
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
