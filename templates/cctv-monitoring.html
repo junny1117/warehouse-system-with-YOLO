@@ -111,25 +111,16 @@
         </div>
 
         <div class="right-menu">
-            <!-- 침입 이벤트 설정 -->
+            <!-- 영역 설정 -->
             <div class="event-group">
-                <strong>위험구역 이벤트 설정</strong>
-                <button>사람</button>
-                <button>동물</button>
-                <button>차량</button>
+                <strong>영역 설정</strong>
                 <a href="{{ url_for('select_roi') }}">
                     <button>위험구역 설정</button>
+                    <a href="{{ url_for('select_roi2') }}">
+                        <button>제한구역 설정</button>
                 </a>
             </div>
 
-            <!-- 불법 주정차 이벤트 설정 -->
-            <div class="event-group">
-                <strong>제한구역 이벤트 설정</strong>
-                <a href="{{ url_for('select_roi2') }}">
-                    <button>제한구역 설정</button>
-                </a>
-                <button>시간 설정</button>
-            </div>
         </div>
     </div>
 
