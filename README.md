@@ -46,7 +46,7 @@
 ![image](https://github.com/user-attachments/assets/8b7a40ed-267d-45c2-87c5-c7ef72a2487e)
 ![image](https://github.com/user-attachments/assets/f78b7e10-8d31-4c80-b3a3-39c117c84e79)
 
-## 실행 방법
+## 실행 방법(리눅스에서만 가능)
 1. 프로젝트 클론: `git clone https://github.com/junny1117/Warehouse-System-with-YOLO`
 2. 필요한 패키지 설치: `pip install -r requirements.txt`
 3. Flask 서버 실행: `flask run`
