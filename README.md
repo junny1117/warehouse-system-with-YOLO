@@ -24,7 +24,7 @@
 
 ## 객체 검지 및 이벤트 처리
 - YOLOv5 모델을 사용하여 CCTV 영상 또는 지정된 영상에서 객체(사람, 지게차)를 실시간으로 검지.
-- 이벤트 인식 로직:
+- **이벤트 인지 로직**:
   - **위험구역 진입**: 사람(작업자 등)이 설정된 구역에 들어오면 인지.
   - **제한구역 진입**: 지게차가 설정된 구역에 들어오면 인지.
   - **근접 경보**: 지게차와 사람의 거리가 일정 수준 미만일 경우 인지.
@@ -41,7 +41,7 @@
 ![image](https://github.com/user-attachments/assets/d3ec8124-66b3-4fa3-ad5d-1519ae4e7dd0)
 ![image](https://github.com/user-attachments/assets/df3ba53f-7983-4e71-aa19-5ed4951728ba)
 
-## 실행결과 이미지
+## 실행 결과 이미지
 ![image](https://github.com/user-attachments/assets/d134621a-b478-4a69-a786-2efbd6ad6009)
 ![image](https://github.com/user-attachments/assets/8b7a40ed-267d-45c2-87c5-c7ef72a2487e)
 ![image](https://github.com/user-attachments/assets/f78b7e10-8d31-4c80-b3a3-39c117c84e79)
