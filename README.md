@@ -75,4 +75,5 @@
 ## 실행 결과 이미지
 ![image](https://github.com/user-attachments/assets/d134621a-b478-4a69-a786-2efbd6ad6009)
 ![image](https://github.com/user-attachments/assets/8b7a40ed-267d-45c2-87c5-c7ef72a2487e)
-![image](https://github.com/user-attachments/assets/f78b7e10-8d31-4c80-b3a3-39c117c84e79)
+![스크린샷 2024-10-22 142513](https://github.com/user-attachments/assets/8f7d2c93-0971-4330-829f-cc3a4f591586)
+
