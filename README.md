@@ -73,7 +73,8 @@
 4. 브라우저에서 `127.0.0.1:5000`으로 접속
 
 ## 실행 결과 이미지
-![image](https://github.com/user-attachments/assets/d134621a-b478-4a69-a786-2efbd6ad6009)
+![스크린샷 2024-10-22 144901](https://github.com/user-attachments/assets/6379cc3f-c1a3-4097-8b78-8143b566ef88)
+![스크린샷 2024-10-22 152600](https://github.com/user-attachments/assets/e223f8b0-d4cf-40a3-911b-7725a638c4dd)
 ![image](https://github.com/user-attachments/assets/8b7a40ed-267d-45c2-87c5-c7ef72a2487e)
 ![스크린샷 2024-10-22 142513](https://github.com/user-attachments/assets/8f7d2c93-0971-4330-829f-cc3a4f591586)
 
